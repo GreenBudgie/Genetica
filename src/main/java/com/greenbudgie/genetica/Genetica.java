@@ -1,6 +1,6 @@
 package com.greenbudgie.genetica;
 
-import com.greenbudgie.genetica.registry.Registry;
+import com.greenbudgie.genetica.registry.GeneticaItems;
 import net.fabricmc.api.ModInitializer;
 
 public class Genetica implements ModInitializer {
@@ -9,6 +9,6 @@ public class Genetica implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        Registry.register();
+        GeneticaItems.registerAll();
     }
 }
