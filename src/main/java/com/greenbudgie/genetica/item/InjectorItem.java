@@ -14,12 +14,12 @@ import java.awt.*;
 
 public class InjectorItem extends Item {
 
-    private static final String TAG_BLOOD = "Blood";
+    private static final String TAG_BLOOD = "blood";
 
     public InjectorItem(Settings settings) {
         super(settings);
         ColorProviderRegistry.ITEM.register((stack, tintIndex) ->
-                getBloodColorInside(stack), this);
+                tintIndex == 0 ? getBloodColorInside(stack) : -1, this);
     }
 
     private boolean hasBloodInside(ItemStack stack) {
@@ -36,7 +36,7 @@ public class InjectorItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        ItemStack currentItem = hand == Hand.MAIN_HAND ? user.getMainHandStack() : user.getOffHandStack();
+        ItemStack currentItem = user.getStackInHand(hand);
         Color bloodColor = BloodColor.getColor(entity.getType());
         currentItem.getOrCreateTag().putInt(TAG_BLOOD, bloodColor.getRGB());
         return ActionResult.SUCCESS;
