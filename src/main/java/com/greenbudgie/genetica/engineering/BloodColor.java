@@ -22,6 +22,7 @@ public final class BloodColor {
                 EntityType.ENDERMAN, EntityType.ENDERMITE, EntityType.SHULKER,
                 EntityType.ENDER_DRAGON, EntityType.PHANTOM);
         setColor(new Color(213,195,195), EntityType.GHAST);
+        setColor(new Color(213,114,0), EntityType.BLAZE);
         setColor(new Color(118,36,4), EntityType.MAGMA_CUBE);
         setColor(new Color(188,119,93), EntityType.MOOSHROOM);
         setColor(new Color(79, 155, 60), EntityType.SLIME);

@@ -1,6 +1,7 @@
 package com.greenbudgie.genetica.engineering.handler;
 
 import com.greenbudgie.genetica.engineering.Substance;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 
 /**
@@ -8,6 +9,8 @@ import net.minecraft.entity.LivingEntity;
  * @param <T> An entity that handles an I/E
  */
 public abstract class IEHandler<T extends LivingEntity> {
+
+    public abstract EntityType<T> getEntityType();
 
     /**
      * Represents a possibility to make an injection or extraction for/from an entity.<br>
