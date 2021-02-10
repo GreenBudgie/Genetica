@@ -1,8 +1,6 @@
-package com.greenbudgie.genetica.util;
+package com.greenbudgie.genetica.engineering;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
