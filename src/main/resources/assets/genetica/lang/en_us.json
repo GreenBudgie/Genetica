@@ -1,3 +1,7 @@
 {
-  "item.genetica.injector": "Injector"
+  "item.genetica.injector": "Injector",
+
+  "block.genetica.flask": "Flask",
+
+  "itemGroup.genetica.genetica": "Genetica"
 }

@@ -1,3 +1,7 @@
 {
-  "item.genetica.injector": "Шприц"
+  "item.genetica.injector": "Шприц",
+
+  "block.genetica.flask": "Колба",
+
+  "itemGroup.genetica.genetica": "Генетика"
 }
