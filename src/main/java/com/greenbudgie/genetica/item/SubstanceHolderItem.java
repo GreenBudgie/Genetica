@@ -1,13 +1,10 @@
 package com.greenbudgie.genetica.item;
 
 import com.greenbudgie.genetica.engineering.Substance;
-import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public abstract class SubstanceHolderItem extends Item {
 
@@ -64,14 +61,28 @@ public abstract class SubstanceHolderItem extends Item {
     }
 
     /**
-     * Gets the substance stored inside of an item
+     * Gets the substance stored inside of an item.
+     * <p><b>Don't use this method to render/update an item every tick!
+     * It may cause lags. To consistently get partial information use other methods listed below.
+     * See also: {@link Substance#fromNBT(CompoundTag)}</b></p>
      * @param stack An item to get substance from
      * @return A substance inside of an item, or null if empty
      */
     @Nullable
     public Substance getSubstance(ItemStack stack) {
         if(!hasSubstance(stack)) return null;
-        return Substance.fromNBT(stack.getTag());
+        return Substance.fromNBT(stack.getSubTag(TAG_SUBSTANCE));
+    }
+
+    /**
+     * Gets the sub-tag to provide all the inner partial information about the substance.
+     * Use this method to get partial information rather than {@link #getSubstance(ItemStack)}
+     * @param stack An item to get tag from
+     * @return Substance tag, or null if empty
+     */
+    @Nullable
+    public CompoundTag getSubstanceTag(ItemStack stack) {
+        return stack.getSubTag(TAG_SUBSTANCE);
     }
 
     /**
@@ -80,7 +91,7 @@ public abstract class SubstanceHolderItem extends Item {
      * @return A substance color, or -1 if empty
      */
     public int getSubstanceColor(ItemStack stack) {
-        return hasSubstance(stack) ? getSubstance(stack).getIntColor() : -1;
+        return hasSubstance(stack) ? getSubstanceTag(stack).getInt(Substance.TAG_COLOR) : -1;
     }
 
 }

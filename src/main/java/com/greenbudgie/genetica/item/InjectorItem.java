@@ -1,17 +1,12 @@
 package com.greenbudgie.genetica.item;
 
-import com.greenbudgie.genetica.engineering.BloodColor;
 import com.greenbudgie.genetica.engineering.Substance;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
 
 /**
  * The main mod item. An injector, aka syringe, provides a player an ability to extract blood from

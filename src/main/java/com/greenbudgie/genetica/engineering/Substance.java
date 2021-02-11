@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,10 +30,10 @@ public class Substance {
      */
     public static final int maxMixins = 5;
 
-    private static final String TAG_MIXIN = "mixin";
-    private static final String TAG_COLOR = "color";
-    private static final String TAG_ENTITY = "entity";
-    private static final String TAG_TYPE = "type";
+    public static final String TAG_MIXIN = "mixin";
+    public static final String TAG_COLOR = "color";
+    public static final String TAG_ENTITY = "entity";
+    public static final String TAG_TYPE = "type";
 
     /**
      * A mixin of the current substance. Mixin may contain another mixin, forming a top-down structure of mixin.
@@ -74,6 +75,13 @@ public class Substance {
         return substance;
     }
 
+    /**
+     * Creates a substance from the given tag.
+     * <p><b>This method should not be called every tick. May cause lags.
+     * Sometimes it's better to get partial information from NBT data using provided tags.</b></p>
+     * @param tag NBT
+     * @return A substance retrieved from NBT
+     */
     public static Substance fromNBT(CompoundTag tag) {
         Objects.requireNonNull(tag);
         Substance substance = new Substance();
@@ -81,6 +89,7 @@ public class Substance {
             substance.entityDNAInside = Registry.ENTITY_TYPE.get(Identifier.tryParse(tag.getString(TAG_ENTITY)));
         }
         substance.color = new Color(tag.getInt(TAG_COLOR));
+        LogManager.getLogger().info(substance);
         substance.type = Type.valueOf(tag.getString(TAG_TYPE));
         if(tag.contains(TAG_MIXIN)) {
             substance.mixin = fromNBT(tag.getCompound(TAG_MIXIN));
