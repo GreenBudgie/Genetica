@@ -1,10 +1,18 @@
 package com.greenbudgie.genetica.engineering;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -21,6 +29,11 @@ public class Substance {
      */
     public static final int maxMixins = 5;
 
+    private static final String TAG_MIXIN = "mixin";
+    private static final String TAG_COLOR = "color";
+    private static final String TAG_ENTITY = "entity";
+    private static final String TAG_TYPE = "type";
+
     /**
      * A mixin of the current substance. Mixin may contain another mixin, forming a top-down structure of mixin.
      * Might be null.
@@ -36,12 +49,12 @@ public class Substance {
     private EntityType<?> entityDNAInside;
 
     /**
-     * A type of the current substance. Cannot be null
+     * Type of the current substance. Cannot be null
      */
     private Type type;
 
     /**
-     * A color of the current substance. It calculates by mixing the current color with all the mixins.
+     * Color of the current substance. It calculates by mixing the current color with all the mixins.
      */
     private Color color;
 
@@ -58,6 +71,20 @@ public class Substance {
         substance.entityDNAInside = entity;
         substance.type = Type.BLOOD;
         substance.color = BloodColor.getColor(entity);
+        return substance;
+    }
+
+    public static Substance fromNBT(CompoundTag tag) {
+        Objects.requireNonNull(tag);
+        Substance substance = new Substance();
+        if(tag.contains(TAG_ENTITY)) {
+            substance.entityDNAInside = Registry.ENTITY_TYPE.get(Identifier.tryParse(tag.getString(TAG_ENTITY)));
+        }
+        substance.color = new Color(tag.getInt(TAG_COLOR));
+        substance.type = Type.valueOf(tag.getString(TAG_TYPE));
+        if(tag.contains(TAG_MIXIN)) {
+            substance.mixin = fromNBT(tag.getCompound(TAG_MIXIN));
+        }
         return substance;
     }
 
@@ -83,6 +110,7 @@ public class Substance {
      * @param mixinSubstance The mixin to add
      */
     public void mixWith(Substance mixinSubstance) {
+        if(!acceptsMixins()) return;
         getUnmixedMixinSubstance().mixin = mixinSubstance;
         updateProperties();
     }
@@ -109,9 +137,33 @@ public class Substance {
      */
     public void updateProperties() {
         if(isMixed()) {
+            if(getMixins().size() > maxMixins) {
+                convertToUnknown();
+                return;
+            }
             mixin.updateProperties();
             color = mixColor(color, mixin.color);
         }
+    }
+
+    /**
+     * Converts the current substance to {@link Type#UNKNOWN}.
+     * It erases all of the mixins and makes it impossible to add more.
+     * See also: {@link #maxMixins}
+     */
+    private void convertToUnknown() {
+        type = Type.UNKNOWN;
+        color = Color.black;
+        mixin = null;
+    }
+
+    /**
+     * Gets whether the current substance can be mixed
+     * Condition: {@link #maxMixins}
+     * @return Whether the substance can be mixed
+     */
+    public boolean acceptsMixins() {
+        return type != Type.UNKNOWN;
     }
 
     private Color mixColor(Color a, Color b) {
@@ -140,6 +192,76 @@ public class Substance {
             mixins.add(currentSubstance);
         }
         return mixins;
+    }
+
+    /**
+     * Gets all of the mixins of the current substance, also including itself
+     * @return A list of mixins and this substance itself
+     */
+    public List<Substance> getMixinsAndItself() {
+        List<Substance> substances = getMixins();
+        substances.add(this);
+        return substances;
+    }
+
+    /**
+     * Checks whether the currents substance or one of its mixins has the specified entity in DNA
+     * @param entityType An entity DNA to search for
+     * @return Whether the substance contains a given DNA
+     */
+    public boolean containsDNA(EntityType<?> entityType) {
+        return deepSearch(substance -> substance.entityDNAInside == entityType);
+    }
+
+    /**
+     * Checks whether the current substance or any of its mixins satisfies the expression
+     * @param expression An expression
+     * @return Whether the substance satisfies the expression
+     */
+    public boolean deepSearch(Predicate<Substance> expression) {
+        return isMixed()
+                ? (expression.test(this) || mixin.deepSearch(expression))
+                : expression.test(this);
+    }
+
+    @Nullable
+    public EntityType<?> getEntityDNAInside() {
+        return entityDNAInside;
+    }
+
+    @NotNull
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * The color of the current substance. It calculates by mixing the current color with all the mixins.
+     * @return Substance color
+     */
+    @NotNull
+    public Color getColor() {
+        return color;
+    }
+
+    /**
+     * The color of the current substance. It calculates by mixing the current color with all the mixins.
+     * @return Substance color, converted to integer for NBT
+     */
+    public int getIntColor() {
+        return color.getRGB();
+    }
+
+    public CompoundTag generateTag() {
+        CompoundTag tag = new CompoundTag();
+        if(entityDNAInside != null) {
+            tag.putString(TAG_ENTITY, Registry.ENTITY_TYPE.getId(entityDNAInside).toString());
+        }
+        tag.putInt(TAG_COLOR, getIntColor());
+        tag.putString(TAG_TYPE, getType().name());
+        if(isMixed()) {
+            tag.put(TAG_MIXIN, mixin.generateTag());
+        }
+        return tag;
     }
 
 }
