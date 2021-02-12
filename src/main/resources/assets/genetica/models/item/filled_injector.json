@@ -2,6 +2,6 @@
   "parent": "item/handheld_rod",
   "textures": {
     "layer0": "genetica:item/injector_overlay",
-    "layer1": "genetica:item/injector"
+    "layer1": "genetica:item/empty_injector"
   }
 }

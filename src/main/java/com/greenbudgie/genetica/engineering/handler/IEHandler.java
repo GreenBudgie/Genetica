@@ -1,5 +1,6 @@
 package com.greenbudgie.genetica.engineering.handler;
 
+import com.greenbudgie.genetica.engineering.IEResult;
 import com.greenbudgie.genetica.engineering.Substance;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

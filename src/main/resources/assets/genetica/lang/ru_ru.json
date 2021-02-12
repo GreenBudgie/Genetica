@@ -1,5 +1,7 @@
 {
-  "item.genetica.injector": "Шприц",
+  "item.genetica.empty_injector": "Пустой Шприц",
+  "item.genetica.filled_injector": "Шприц",
+  "item.genetica.broken_injector": "Сломанный Шприц",
 
   "block.genetica.flask": "Колба",
 

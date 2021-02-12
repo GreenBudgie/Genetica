@@ -13,7 +13,7 @@ public class Genetica implements ModInitializer {
     public static final String MODID = "genetica";
 
     public static final ItemGroup GENETICA_ITEM_GROUP = FabricItemGroupBuilder.create(
-            new Identifier(MODID, "genetica")).icon(() -> new ItemStack(GeneticaItems.INJECTOR)).build();
+            new Identifier(MODID, "genetica")).icon(() -> new ItemStack(GeneticaItems.EMPTY_INJECTOR)).build();
 
     @Override
     public void onInitialize() {

@@ -1,4 +1,4 @@
-package com.greenbudgie.genetica.engineering.handler;
+package com.greenbudgie.genetica.engineering;
 
 /**
  * Represents a result of an injection or extraction a substance

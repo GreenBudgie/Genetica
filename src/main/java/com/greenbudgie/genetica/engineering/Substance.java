@@ -1,8 +1,8 @@
 package com.greenbudgie.genetica.engineering;
 
+import com.greenbudgie.genetica.item.FilledInjectorItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
- * A substance that an {@link com.greenbudgie.genetica.item.InjectorItem Injector} may contain.
+ * A substance that an {@link FilledInjectorItem Injector} may contain.
  */
 public class Substance {
 
