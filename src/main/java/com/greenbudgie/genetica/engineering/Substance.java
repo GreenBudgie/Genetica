@@ -103,7 +103,6 @@ public class Substance {
             substance.entityDNAInside = Registry.ENTITY_TYPE.get(Identifier.tryParse(tag.getString(TAG_ENTITY)));
         }
         substance.color = new Color(tag.getInt(TAG_COLOR));
-        LogManager.getLogger().info(substance);
         substance.type = Type.valueOf(tag.getString(TAG_TYPE));
         substance.volume = tag.getFloat(TAG_VOLUME);
         if(tag.contains(TAG_MIXIN)) {
@@ -119,12 +118,13 @@ public class Substance {
      */
     public static Substance cloneOf(Substance anotherSubstance) {
         Substance substance = new Substance();
-        if(substance.isMixed()) {
+        if(anotherSubstance.isMixed()) {
             substance.mixin = cloneOf(anotherSubstance.mixin);
         }
         substance.color = anotherSubstance.color;
         substance.entityDNAInside = anotherSubstance.entityDNAInside;
         substance.type = anotherSubstance.type;
+        substance.volume = anotherSubstance.volume;
         return substance;
     }
 
@@ -162,13 +162,14 @@ public class Substance {
     public void updateProperties() {
         if(isMixed()) {
             int mixinsSize = getMixins().size();
-            if(mixinsSize > maxMixins) {
+            if(mixinsSize >= maxMixins) {
                 convertToUnknown();
                 return;
             }
             mixin.updateProperties();
             volume = MathHelper.clamp(mixinsSize / (float) maxMixins + minVolume, minVolume, 1);
             color = mixColor(color, mixin.color);
+            System.out.println(toString());
         }
     }
 
@@ -205,7 +206,7 @@ public class Substance {
      * @return Unmixed mixin of the current substance, or itself if no mixins found
      */
     public Substance getUnmixedMixinSubstance() {
-        return isMixed() ? this : mixin.getUnmixedMixinSubstance();
+        return !isMixed() ? this : mixin.getUnmixedMixinSubstance();
     }
 
     /**
@@ -215,8 +216,8 @@ public class Substance {
     public List<Substance> getMixins() {
         List<Substance> mixins = new ArrayList<>();
         if(!isMixed()) return mixins;
-        for(Substance currentSubstance = mixin; currentSubstance.isMixed(); currentSubstance = currentSubstance.mixin) {
-            mixins.add(currentSubstance);
+        for(Substance currentSubstance = this; currentSubstance.isMixed(); currentSubstance = currentSubstance.mixin) {
+            mixins.add(currentSubstance.mixin);
         }
         return mixins;
     }
@@ -296,8 +297,19 @@ public class Substance {
         tag.putFloat(TAG_VOLUME, getVolume());
         if(isMixed()) {
             tag.put(TAG_MIXIN, mixin.generateTag());
+            System.out.println("Generated");
         }
         return tag;
     }
 
+    @Override
+    public String toString() {
+        return "Substance{" +
+                "mixinNumber=" + getMixins().size() +
+                ", entityDNAInside=" + entityDNAInside +
+                ", type=" + type +
+                ", color=" + color +
+                ", volume=" + volume +
+                '}';
+    }
 }
