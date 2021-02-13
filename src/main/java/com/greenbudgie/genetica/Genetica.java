@@ -1,6 +1,7 @@
 package com.greenbudgie.genetica;
 
 import com.greenbudgie.genetica.block.GeneticaBlocks;
+import com.greenbudgie.genetica.block.entity.GeneticaBlockEntities;
 import com.greenbudgie.genetica.item.GeneticaItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -19,5 +20,6 @@ public class Genetica implements ModInitializer {
     public void onInitialize() {
         GeneticaItems.registerAll();
         GeneticaBlocks.registerAll();
+        GeneticaBlockEntities.registerAll();
     }
 }

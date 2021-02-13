@@ -4,6 +4,7 @@ import com.greenbudgie.genetica.item.FilledInjectorItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
@@ -30,10 +31,16 @@ public class Substance {
      */
     public static final int maxMixins = 5;
 
+    /**
+     * A tag that represents a substance in NBT data.
+     */
+    public static final String TAG_SUBSTANCE = "substance";
+
     public static final String TAG_MIXIN = "mixin";
     public static final String TAG_COLOR = "color";
     public static final String TAG_ENTITY = "entity";
     public static final String TAG_TYPE = "type";
+    public static final String TAG_VOLUME = "volume";
 
     /**
      * A mixin of the current substance. Mixin may contain another mixin, forming a top-down structure of mixin.
@@ -58,6 +65,13 @@ public class Substance {
      * Color of the current substance. It calculates by mixing the current color with all the mixins.
      */
     private Color color;
+
+    private final float minVolume = 0.2F;
+
+    /**
+     * An amount of space this substance is currently taking, from {@link #minVolume} to 1
+     */
+    private float volume = minVolume;
 
     private Substance() {}
 
@@ -91,6 +105,7 @@ public class Substance {
         substance.color = new Color(tag.getInt(TAG_COLOR));
         LogManager.getLogger().info(substance);
         substance.type = Type.valueOf(tag.getString(TAG_TYPE));
+        substance.volume = tag.getFloat(TAG_VOLUME);
         if(tag.contains(TAG_MIXIN)) {
             substance.mixin = fromNBT(tag.getCompound(TAG_MIXIN));
         }
@@ -146,11 +161,13 @@ public class Substance {
      */
     public void updateProperties() {
         if(isMixed()) {
-            if(getMixins().size() > maxMixins) {
+            int mixinsSize = getMixins().size();
+            if(mixinsSize > maxMixins) {
                 convertToUnknown();
                 return;
             }
             mixin.updateProperties();
+            volume = MathHelper.clamp(mixinsSize / (float) maxMixins + minVolume, minVolume, 1);
             color = mixColor(color, mixin.color);
         }
     }
@@ -164,6 +181,7 @@ public class Substance {
         type = Type.UNKNOWN;
         color = Color.black;
         mixin = null;
+        volume = 1F;
     }
 
     /**
@@ -253,6 +271,14 @@ public class Substance {
     }
 
     /**
+     * An amount of space this substance is currently taking.
+     * @return Volume of the substance, from {@link #minVolume} to 1
+     */
+    public float getVolume() {
+        return volume;
+    }
+
+    /**
      * The color of the current substance. It calculates by mixing the current color with all the mixins.
      * @return Substance color, converted to integer for NBT
      */
@@ -267,6 +293,7 @@ public class Substance {
         }
         tag.putInt(TAG_COLOR, getIntColor());
         tag.putString(TAG_TYPE, getType().name());
+        tag.putFloat(TAG_VOLUME, getVolume());
         if(isMixed()) {
             tag.put(TAG_MIXIN, mixin.generateTag());
         }
